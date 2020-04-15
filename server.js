@@ -22,7 +22,7 @@ server.on('upgrade', async function (request, socket, head) {
       } else {
         // Create Node
         console.log('Create id',pathname);
-        gun = await Gun({peers:[], ws: { noServer: true}});
+        gun = await Gun({peers:[], ws: { path: pathname}, web: new WebSocket.Server({ noServer: true})});
         lru.set(pathname,gun);
       }
   }
