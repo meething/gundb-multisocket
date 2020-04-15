@@ -6,9 +6,9 @@ var server = http.createServer().listen(3000);
 
 // LRU with last used sockets
 const QuickLRU = require('quick-lru');
-const lru = new QuickLRU({maxSize: 100});
+const lru = new QuickLRU({maxSize: 1});
 
-var wss_event = new WebSocket.Server({ noServer: true});
+//var wss_event = new WebSocket.Server({ noServer: true});
 
 server.on('upgrade', async function (request, socket, head) {
   var pathname = url.parse(request.url).pathname || '/gun';
@@ -22,15 +22,20 @@ server.on('upgrade', async function (request, socket, head) {
       } else {
         // Create Node
         console.log('Create id',pathname);
-        gun = await Gun({peers:[], ws: { path: pathname}, web: new WebSocket.Server({ noServer: true})});
+        var wserver = new WebSocket.Server({ noServer: true});
+        gun = new Gun({peers:[], ws: { path: pathname}, web: server });
         lru.set(pathname,gun);
       }
   }
   if (gun){
       // Handle Request
-      gun.handleUpgrade(request, socket, head, function (ws) {
-              gun.emit('connection', ws);
+      console.log('handle connection...');
+      //ws.emit('connection', socket);
+      wserver.handleUpgrade(request, socket, head, function (ws) {
+              console.log('connecting.. ')
+              ws.emit('connection', socket);     
       });
+    
   } else {
       socket.destroy();
   }
