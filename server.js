@@ -2,7 +2,7 @@ const url = require('url');
 const Gun = require('gun');
 const http = require('http');
 const WebSocket = require('ws');
-var server = http.createServer().listen(3000);
+var server = http.createServer();
 
 // LRU with last used sockets
 const QuickLRU = require('quick-lru');
@@ -23,7 +23,7 @@ server.on('upgrade', async function (request, socket, head) {
         // Create Node
         console.log('Create id',pathname);
         gun.server = new WebSocket.Server({ noServer: true});
-        gun.gun = new Gun({peers:[], ws: { noServer: true, path: pathname} });
+        gun.gun = new Gun({peers:[], ws: { noServer: true } });
         lru.set(pathname,gun);
       }
   }
@@ -33,10 +33,13 @@ server.on('upgrade', async function (request, socket, head) {
       //ws.emit('connection', socket);
       gun.server.handleUpgrade(request, socket, head, function (ws) {
               console.log('connecting.. ')
-              ws.emit('connection', ws);     
+              gun.server.emit('connection', ws);     
       });
     
   } else {
       socket.destroy();
   }
 });
+
+
+server.listen(3000);
