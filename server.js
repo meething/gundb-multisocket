@@ -13,7 +13,7 @@ const lru = new QuickLRU({maxSize: 1});
 server.on('upgrade', async function (request, socket, head) {
   var pathname = url.parse(request.url).pathname || '/gun';
   console.log('Got WS request',pathname);
-  var gun = false;
+  var gun = { gun: false, server: false};
   if (pathname){
       if (lru.has(pathname)){
         // Existing Node
@@ -23,17 +23,17 @@ server.on('upgrade', async function (request, socket, head) {
         // Create Node
         console.log('Create id',pathname);
         var wserver = new WebSocket.Server({ noServer: true});
-        gun = new Gun({peers:[], ws: { path: pathname}, web: server });
-        lru.set(pathname,gun);
+        gun = new Gun({peers:[], ws: { path: pathname}, web: wserver });
+        lru.set(pathname,{gun: gun, server: wserver});
       }
   }
-  if (gun){
+  if (gun.server){
       // Handle Request
-      console.log('handle connection...');
+      console.log('handle connection...', gun);
       //ws.emit('connection', socket);
-      wserver.handleUpgrade(request, socket, head, function (ws) {
+      gun.server.handleUpgrade(request, socket, head, function (ws) {
               console.log('connecting.. ')
-              ws.emit('connection', socket);     
+              ws.emit('connection', ws);     
       });
     
   } else {
