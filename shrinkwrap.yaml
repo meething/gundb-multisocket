@@ -1,6 +1,7 @@
 dependencies:
   express: 4.17.1
   gun: 0.2020.401
+  quick-lru: 5.1.0
 packages:
   /@peculiar/asn1-schema/1.1.2:
     dependencies:
@@ -533,6 +534,12 @@ packages:
       node: '>=0.6'
     resolution:
       integrity: sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==
+  /quick-lru/5.1.0:
+    dev: false
+    engines:
+      node: '>=10'
+    resolution:
+      integrity: sha512-WjAKQ9ORzvqjLijJXiXWqc3Gcs1ivoxCj6KJmEjoWBE6OtHwuaDLSAUqGHALUiid7A1KqGqsSHZs8prxF5xxAQ==
   /ramda/0.26.1:
     dev: false
     optional: true
@@ -709,3 +716,4 @@ shrinkwrapVersion: 3
 specifiers:
   express: ^4.17.1
   gun: ^0.2020.401
+  quick-lru: ^5.1.0
