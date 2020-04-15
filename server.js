@@ -22,14 +22,14 @@ server.on('upgrade', async function (request, socket, head) {
       } else {
         // Create Node
         console.log('Create id',pathname);
-        var wserver = new WebSocket.Server({ noServer: true});
-        gun = new Gun({peers:[], ws: { path: pathname}, web: wserver });
-        lru.set(pathname,{gun: gun, server: wserver});
+        gun.server = new WebSocket.Server({ noServer: true});
+        gun.gun = new Gun({peers:[], ws: { noServer: true, path: pathname} });
+        lru.set(pathname,gun);
       }
   }
   if (gun.server){
       // Handle Request
-      console.log('handle connection...', gun);
+      console.log('handle connection...');
       //ws.emit('connection', socket);
       gun.server.handleUpgrade(request, socket, head, function (ws) {
               console.log('connecting.. ')
