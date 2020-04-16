@@ -22,11 +22,11 @@ gun2.get('jill').on(function(data, key){
   console.log("gun 2 update:", data);
 });
 
-// Peer 1 DO NOT know Jack!
+// Peer 1 SHOULD NOT know Jack!
 gun2.get('jack').on(function(data, key){
   console.log("gun 2 update:", data);
 });
-// Peer 2 DO NOT know Jill!
+// Peer 2 SHOULD NOT know Jill!
 gun1.get('jill').on(function(data, key){
   console.log("gun 1 update:", data);
 });
