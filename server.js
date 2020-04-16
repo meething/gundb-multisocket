@@ -1,5 +1,6 @@
 const url = require('url');
-const Gun = require('gun');
+const Gun = require('gun/gun');
+require('./gun-ws.js');
 const http = require('http');
 const WebSocket = require('ws');
 var server = http.createServer();
@@ -24,8 +25,8 @@ server.on('upgrade', async function (request, socket, head) {
         console.log('Create id',pathname);
         // HOW HOW HOW ? IS it even possible to attach the WS to the Gun Object alone?
        // Works only when passing "server" to the web parameter, no WS/WSS)
-        //gun.server = new WebSocket.Server({ noServer: true});
-        gun.gun = new Gun({peers:[], ws: { noServer: true }, web: undefined });
+        gun.server = new WebSocket.Server({ noServer: true});
+        gun.gun = new Gun({peers:[], ws: { noServer: true, path: pathname, web: gun.server }, web: gun.server });
         lru.set(pathname,gun);
       }
   }
