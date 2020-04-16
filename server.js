@@ -1,3 +1,9 @@
+/* Gun Multi-WS Monster */
+/* Spawn multiple Gun WebSockets from the same HTTP/HTTPS server
+ * Each Gun is scoped to its ws.path and intended for ephemeral usage
+ * MIT Licensed (C) QXIP 2020
+ */
+
 const url = require('url');
 const Gun = require('gun/gun');
 require('./gun-ws.js');
@@ -7,7 +13,7 @@ var server = http.createServer();
 
 // LRU with last used sockets
 const QuickLRU = require('quick-lru');
-const lru = new QuickLRU({maxSize: 1});
+const lru = new QuickLRU({maxSize: 10});
 
 //var wss_event = new WebSocket.Server({ noServer: true});
 
@@ -51,5 +57,5 @@ server.on('upgrade', async function (request, socket, head) {
   }
 });
 
-
+// 
 server.listen(3000);
