@@ -35,8 +35,9 @@ server.on('upgrade', async function (request, socket, head) {
         gun.gun = new Gun({ 
             peers:[], // should we use self as peer?
             localStorage: false, 
-            radisk: true,
-            file: false, 
+            //radisk: false,
+            //file: false,
+            file: "tmp/"+Math.random().toString(36).substring(7),
             multicast: false,
             ws: { noServer: true, path: pathname, web: gun.server }, 
             web: gun.server 
