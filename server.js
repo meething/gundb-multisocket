@@ -42,7 +42,7 @@ server.on('upgrade', async function (request, socket, head) {
       console.log('handle connection...');
       //ws.emit('connection', socket);
       gun.server.handleUpgrade(request, socket, head, function (ws) {
-              console.log('connecting to gun.. ')
+              console.log('connecting to gun.. ', gun.gun.opt().opt )
               gun.server.emit('connection', ws, request);     
       });
     
