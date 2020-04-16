@@ -15,8 +15,6 @@ var server = http.createServer();
 const QuickLRU = require('quick-lru');
 const lru = new QuickLRU({maxSize: 10});
 
-//var wss_event = new WebSocket.Server({ noServer: true});
-
 server.on('upgrade', async function (request, socket, head) {
   var pathname = url.parse(request.url).pathname || '/gun';
   console.log('Got WS request',pathname);
