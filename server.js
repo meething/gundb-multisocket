@@ -25,8 +25,7 @@ server.on('upgrade', async function (request, socket, head) {
         // HOW HOW HOW ? IS it even possible to attach the WS to the Gun Object alone?
        // Works only when passing "server" to the web parameter, no WS/WSS)
         //gun.server = new WebSocket.Server({ noServer: true});
-        gun.gun = new Gun({peers:[], ws: { noServer: true }, web: server });
-        gun.server = gun.gun.opt().ws;
+        gun.gun = new Gun({peers:[], ws: { noServer: true }, web: gun.server });
         lru.set(pathname,gun);
       }
   }
