@@ -23,10 +23,9 @@ server.on('upgrade', async function (request, socket, head) {
       } else {
         // Create Node
         console.log('Create id',pathname);
-        // HOW HOW HOW ? IS it even possible to attach the WS to the Gun Object alone?
-       // Works only when passing "server" to the web parameter, no WS/WSS)
-        gun.server = new WebSocket.Server({ noServer: true});
-        gun.gun = new Gun({peers:[], localStorage: false, ws: { noServer: true, path: pathname, web: gun.server }, web: gun.server });
+        // NOTE: Only works with lib/ws.js shim allowing a predefined WS as ws.web parameter in Gun constructor
+        gun.server = new WebSocket.Server({ noServer: true, path: pathname});
+        gun.gun = new Gun({peers:[], localStorage: false, file: false, ws: { noServer: true, path: pathname, web: gun.server }, web: gun.server });
         lru.set(pathname,gun);
       }
   }

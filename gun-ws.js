@@ -15,7 +15,7 @@
 
 	if(opt.web){ 
     
-    console.log('Initializing Gun WS socket!', ws.path);
+    console.log('Initializing Gun WS socket', ws.path);
     
 		ws.server = ws.server || opt.web;
 		ws.path = ws.path || '/gun';

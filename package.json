@@ -1,10 +1,7 @@
 {
-  "//1": "describes your app and its dependencies",
-  "//2": "https://docs.npmjs.com/files/package.json",
-  "//3": "updating this file will download and update your packages",
-  "name": "hello-express",
+  "name": "gundb-multiserver",
   "version": "0.0.1",
-  "description": "A simple Node app built on Express, instantly up and running.",
+  "description": "Serve multiple Gun WS instances over a single HTTP socket",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -18,7 +15,7 @@
     "node": "12.x"
   },
   "repository": {
-    "url": "https://glitch.com/edit/#!/hello-express"
+    "url": "https://glitch.com/edit/#!/gundb-multiserver"
   },
   "license": "MIT",
   "keywords": [
