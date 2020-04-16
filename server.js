@@ -29,7 +29,7 @@ server.on('upgrade', async function (request, socket, head) {
         gun.gun = new Gun({ 
             peers:[], // should we use self as peer?
             localStorage: false, 
-            file: false, 
+            file: Math.random().toString(36).substring(7), 
             ws: { noServer: true, path: pathname, web: gun.server }, 
             web: gun.server 
         });
@@ -42,7 +42,7 @@ server.on('upgrade', async function (request, socket, head) {
       console.log('handle connection...');
       //ws.emit('connection', socket);
       gun.server.handleUpgrade(request, socket, head, function (ws) {
-              console.log('connecting to gun.. ', gun.gun.opt().opt )
+              console.log('connecting to gun.. ', gun.gun.opt()._.opt.ws.path )
               gun.server.emit('connection', ws, request);     
       });
     
