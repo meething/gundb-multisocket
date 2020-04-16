@@ -33,7 +33,7 @@ server.on('upgrade', async function (request, socket, head) {
             ws: { noServer: true, path: pathname, web: gun.server }, 
             web: gun.server 
         });
-        gun.gun.on("in", function(msg) { console.log('got',msg) });
+        // gun.gun.on("in", function(msg) { console.log('got',msg ) });
         lru.set(pathname,gun);
       }
   }
