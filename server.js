@@ -25,7 +25,15 @@ server.on('upgrade', async function (request, socket, head) {
         console.log('Create id',pathname);
         // NOTE: Only works with lib/ws.js shim allowing a predefined WS as ws.web parameter in Gun constructor
         gun.server = new WebSocket.Server({ noServer: true, path: pathname});
-        gun.gun = new Gun({peers:[], localStorage: false, file: false, ws: { noServer: true, path: pathname, web: gun.server }, web: gun.server });
+        console.log('set peer',request.headers.host+pathname);
+        gun.gun = new Gun({ 
+            peers:[], // should we use self as peer?
+            localStorage: false, 
+            file: false, 
+            ws: { noServer: true, path: pathname, web: gun.server }, 
+            web: gun.server 
+        });
+        gun.gun.on("in", function(msg) { console.log('got',msg) });
         lru.set(pathname,gun);
       }
   }
