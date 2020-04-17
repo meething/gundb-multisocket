@@ -2,7 +2,9 @@
 Single `HTTP/S` server providing `WebSocket` Path based routing to ephemeral [GunDB](https://gun.eco) instances for mesh isolation.
 
 ### Notes
-* The service MUST be served through SSL and can be deployed on [glitch](https://glitch.com/~gundb-multiserver) and other platforms.
+* uses its own [mem](https://github.com/meething/gundb-multisocket/blob/master/mem.js) storage adaptor to avoid any disk writes
+* uses its own [websockets](https://github.com/meething/gundb-multisocket/blob/master/gun-ws.js) adaptor allowing injection into Gun contructors
+* MUST be served through SSL and can easily be deployed on [glitch](https://glitch.com/~gundb-multiserver) and other platforms.
 
 ### Installation
 ```
