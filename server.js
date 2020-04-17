@@ -1,7 +1,7 @@
 /* Gun Multi-WS Monster */
 /* Spawn multiple Gun WebSockets from the same HTTP/HTTPS server
  * Each Gun is scoped to its ws.path and intended for ephemeral usage
- * MIT Licensed (C) QXIP 2020
+ * MIT Licensed (C) QXIP 2020 (QXIP, QVDEV)
  */
 
 const url = require("url");

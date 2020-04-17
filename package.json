@@ -1,5 +1,5 @@
 {
-  "name": "gundb-multiserver",
+  "name": "gundb-multisocket",
   "version": "0.0.1",
   "author": "Lorenzo Mangani <lorenzo.mangani@gmail.com>",
   "description": "Serve multiple Gun WS instances over a single HTTP socket",

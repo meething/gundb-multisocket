@@ -1,7 +1,7 @@
 ![image](https://user-images.githubusercontent.com/1423657/79577881-b6ae2480-80c5-11ea-925c-8d69c2168613.png)
 
 # GunDB MultiSocket
-Single `HTTP/S` server providing `WebSocket` Path based routing to ephemeral [GunDB](https://gun.eco) instances for mesh isolation.
+Single `HTTP/S` server providing `WebSocket` Path based routing to ephemeral [GunDB](https://gun.eco) instances in mesh isolation.
 
 ### Notes
 * uses its own [mem](https://github.com/meething/gundb-multisocket/blob/master/mem.js) storage adaptor to avoid any disk writes
@@ -13,6 +13,8 @@ Single `HTTP/S` server providing `WebSocket` Path based routing to ephemeral [Gu
 npm install
 npm start
 ```
+
+[![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/import/github/https://github.com/meething/gundb-multisocket/gundb-multisocket)
 
 #### Gun WS Flow
 
