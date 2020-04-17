@@ -1,16 +1,14 @@
 (function() {
   var Gun = typeof window !== "undefined" ? window.Gun : require("gun");
-  console.log("Initialized memdisk");
+
   Gun.on("opt", function(ctx) {
-    
     this.to.next(ctx);
     var opt = ctx.opt;
-    console.log("opt::" + JSON.stringify(opt));
+    console.log("opt.pid::" + JSON.stringify(opt));
     if (ctx.once) {
       return;
     }
-    opt.file = String(opt.file || "data.json");
-    
+    opt.file = String(opt.file);
     var graph = ctx.graph,
       acks = {},
       count = 0,
@@ -20,7 +18,6 @@
     // : null) || {};
 
     ctx.on("put", function(at) {
-      console.log("put::" + JSON.stringify(at));
       this.to.next(at);
       Gun.graph.is(at.put, null, map);
       if (!at["@"]) {
