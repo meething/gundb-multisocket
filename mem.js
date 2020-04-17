@@ -4,11 +4,10 @@
   Gun.on("opt", function(ctx) {
     this.to.next(ctx);
     var opt = ctx.opt;
-    console.log("opt.pid::" + JSON.stringify(opt));
     if (ctx.once) {
       return;
     }
-    opt.file = String(opt.file || "data.json");
+    
     var graph = ctx.graph,
       acks = {},
       count = 0,
