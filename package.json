@@ -1,6 +1,6 @@
 {
   "name": "gundb-multiserver",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Serve multiple Gun WS instances over a single HTTP socket",
   "main": "server.js",
   "scripts": {
@@ -9,7 +9,8 @@
   "dependencies": {
     "express": "^4.17.1",
     "gun": "^0.2020.401",
-    "quick-lru": "^5.1.0"
+    "quick-lru": "^5.1.0",    
+    "rimraf": "^3.0.2"
   },
   "engines": {
     "node": "12.x"
