@@ -8,11 +8,14 @@ Single `HTTP/S` server providing `WebSocket` Path based routing to ephemeral [Gu
 * uses its own [websockets](https://github.com/meething/gundb-multisocket/blob/master/gun-ws.js) adaptor allowing injection into Gun contructors
 * MUST be served through SSL and can easily be deployed on [glitch](https://glitch.com/~gundb-multiserver) and other platforms.
 
+
 ### Installation
 ```
 npm install
 npm start
 ```
+
+[![Remix on Glitch](https://cdn.glitch.com/2703baf2-b643-4da7-ab91-7ee2a2d00b5b%2Fremix-button.svg)](https://glitch.com/edit/#!/import/github/https://github.com/meething/gundb-multisocket/gundb-multisocket)
 
 #### Gun WS Flow
 
