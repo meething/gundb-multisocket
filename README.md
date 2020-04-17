@@ -1,5 +1,4 @@
-# GunDB Multiserver
-
+# GunDB MultiSocket
 Single `HTTP/S` server providing `WebSocket` Path based routing to ephemeral [GunDB](https://gun.eco) instances for mesh isolation.
 
 ### Gun WS Flow
