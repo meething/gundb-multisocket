@@ -1,3 +1,5 @@
+![image](https://user-images.githubusercontent.com/1423657/79577881-b6ae2480-80c5-11ea-925c-8d69c2168613.png)
+
 # GunDB MultiSocket
 Single `HTTP/S` server providing `WebSocket` Path based routing to ephemeral [GunDB](https://gun.eco) instances for mesh isolation.
 
