@@ -2,24 +2,21 @@
   var Gun = typeof window !== "undefined" ? window.Gun : require("gun");
 
   Gun.on("opt", function(ctx) {
-    // this.to.next(ctx);
+    this.to.next(ctx);
     var opt = ctx.opt;
     console.log("opt.pid::" + JSON.stringify(opt));
     if (ctx.once) {
       return;
     }
-    opt.file = String(opt.file );
+    opt.file = String(opt.file || "data.json");
     var graph = ctx.graph,
       acks = {},
       count = 0,
       to;
-    // var disk = Gun.obj.ify((fs.existsSync || require('path').existsSync)(opt.file)?
-    // 	fs.readFileSync(opt.file).toString()
-    // : null) || {};
 
     ctx.on("put", function(at) {
-      // this.to.next(at);
-      // Gun.graph.is(at.put, null, map);
+      this.to.next(at);
+      Gun.graph.is(at.put, null, null);
       if (!at["@"]) {
         acks[at["#"]] = true;
       } // only ack non-acks.
@@ -34,29 +31,22 @@
     });
 
     ctx.on("get", function(at) {
-      // this.to.next(at);
+      // this.to.next(at); //What does this do?
       var lex = at.get,
         soul,
         data,
         opt,
         u;
-      //setTimeout(function(){
+
       if (!lex || !(soul = lex["#"])) {
         return;
       }
-      //if(0 >= at.cap){ return }
       var field = lex["."];
-      // data = disk[soul] || u;
       if (data && field) {
         data = Gun.state.to(data, field);
       }
       ctx.on("in", { "@": at["#"], put: Gun.graph.node(data) });
-      //},11);
     });
-
-    var map = function(val, key, node, soul) {
-      disk[soul] = Gun.state.to(node, key, disk[soul]);
-    };
 
     var wait;
     var flush = function() {
@@ -68,19 +58,6 @@
       to = false;
       var ack = acks;
       acks = {};
-      // fs.writeFile(opt.file, JSON.stringify(disk, null, 2), function(err, ok){
-      // 	wait = false;
-      // 	var tmp = count;
-      // 	count = 0;
-      // 	Gun.obj.map(ack, function(yes, id){
-      // 		ctx.on('in', {
-      // 			'@': id,
-      // 			err: err,
-      // 			ok: 0 // memdisk should not be relied upon as permanent storage.
-      // 		});
-      // 	});
-      // 	if(1 < tmp){ flush() }
-      // });
     };
   });
 })();
