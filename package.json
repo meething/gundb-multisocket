@@ -1,6 +1,7 @@
 {
   "name": "gundb-multiserver",
   "version": "0.0.1",
+  "author": "Lorenzo Mangani <lorenzo.mangani@gmail.com>",
   "description": "Serve multiple Gun WS instances over a single HTTP socket",
   "main": "server.js",
   "scripts": {
@@ -16,7 +17,7 @@
     "node": "12.x"
   },
   "repository": {
-    "url": "https://glitch.com/edit/#!/gundb-multiserver"
+    "url": "https://github.com/meething/gundb-multisocket"
   },
   "license": "MIT",
   "keywords": [
