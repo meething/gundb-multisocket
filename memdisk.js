@@ -2,13 +2,13 @@
   var Gun = typeof window !== "undefined" ? window.Gun : require("gun");
 
   Gun.on("opt", function(ctx) {
-    this.to.next(ctx);
+    // this.to.next(ctx);
     var opt = ctx.opt;
     console.log("opt.pid::" + JSON.stringify(opt));
     if (ctx.once) {
       return;
     }
-    opt.file = String(opt.file);
+    opt.file = String(opt.file );
     var graph = ctx.graph,
       acks = {},
       count = 0,
@@ -18,8 +18,8 @@
     // : null) || {};
 
     ctx.on("put", function(at) {
-      this.to.next(at);
-      Gun.graph.is(at.put, null, map);
+      // this.to.next(at);
+      // Gun.graph.is(at.put, null, map);
       if (!at["@"]) {
         acks[at["#"]] = true;
       } // only ack non-acks.
@@ -34,7 +34,7 @@
     });
 
     ctx.on("get", function(at) {
-      this.to.next(at);
+      // this.to.next(at);
       var lex = at.get,
         soul,
         data,
