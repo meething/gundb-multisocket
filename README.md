@@ -20,20 +20,20 @@ localStorage.clear();
 
 var random1 = Math.random().toString(36).substring(7);
 var gun1 = Gun({peers:["https://gundb-multiserver.glitch.me/"+random1], musticast: false, localStorage: false, radisk: false, file: false});
-gun1.get('zero1').put({ name: "Jack" });
+gun1.get('jack').put({ name: "Jack" });
 // This should be triggered
-gun1.get('zero1').on(function(data, key){
+gun1.get('jack').on(function(data, key){
   console.log("gun 1 update:", data);
 });
 // This should never be triggered
-gun1.get('zero2').on(function(data, key){
-  console.log("gun 1-2 update:", data);
+gun1.get('jill').on(function(data, key){
+  console.log("Jack should NOT see Jill's update", data);
 });
 
 var random2 = Math.random().toString(36).substring(7);
 var gun2 = Gun({peers:["https://gundb-multiserver.glitch.me/"+random2], multicast: false, localStorage: false, radisk: false, file: false});
-gun2.get('zero2').put({ name: "Jill"});
-gun2.get('zero2').on(function(data, key){
+gun2.get('jill').put({ name: "Jill"});
+gun2.get('jill').on(function(data, key){
   console.log("gun 2 update:", data);
 });
 ```
