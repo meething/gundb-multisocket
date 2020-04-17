@@ -5,6 +5,7 @@
  */
 
 const url = require('url');
+var rimraf = require("rimraf");
 const Gun = require('gun/gun');
 require('./gun-ws.js');
 const http = require('http');
@@ -14,6 +15,11 @@ var server = http.createServer();
 // LRU with last used sockets
 const QuickLRU = require('quick-lru');
 const lru = new QuickLRU({maxSize: 10});
+
+var evict = function(){
+  
+  
+}
 
 server.on('upgrade', async function (request, socket, head) {
   var pathname = url.parse(request.url).pathname || '/gun';
@@ -33,7 +39,8 @@ server.on('upgrade', async function (request, socket, head) {
         gun.gun = new Gun({ 
             peers:[], // should we use self as peer?
             localStorage: false, 
-            file: "tmp/"+Math.random().toString(36).substring(7),
+            radisk: false,
+            // file: "tmp/"+Math.random().toString(36).substring(7),
             multicast: false,
             ws: { noServer: true, path: pathname, web: gun.server }, 
             web: gun.server 
