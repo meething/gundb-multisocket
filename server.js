@@ -4,6 +4,7 @@
  * MIT Licensed (C) QXIP 2020
  */
 
+const fs = require("fs");
 const url = require("url");
 const Gun = require("gun/gun"); // do not load storage adaptors by default
 require("./gun-ws.js"); // required to allow external websockets into gun constructor
@@ -12,15 +13,16 @@ const http = require("http");
 const https = require("https");
 const WebSocket = require("ws");
 var debug = process.env.DEBUG || false;
+var config = {};
 
 config.options = {
-  key: process.env.SSLKEY ? fs.readFileSync(process.env.SSLKEY) : fs.readFileSync('src/assets/server.key'),
-  cert: process.env.SSLCERT ? fs.readFileSync(process.env.SSLCERT) :  fs.readFileSync('src/assets/server.cert')
+  key: process.env.SSLKEY ? fs.readFileSync(process.env.SSLKEY) : fs.readFileSync('cert/server.key'),
+  cert: process.env.SSLCERT ? fs.readFileSync(process.env.SSLCERT) :  fs.readFileSync('cert/server.cert')
 }
 
 if (!process.env.SSL) {
   var server = http.createServer();
-  server.listen(process.env.port || 3000);
+  server.listen(process.env.PORT || 3000);
 } else {
   var server = https.createServer(config.options);
   server.listen(process.env.PORT || 443);
