@@ -5,44 +5,50 @@
  */
 
 const url = require("url");
-var rimraf = require("rimraf");
 const Gun = require("gun/gun"); // do not load storage adaptors by default
 require("./gun-ws.js"); // required to allow external websockets into gun constructor
 require("./mem.js"); // disable to allow file writing for debug
 const http = require("http");
+const https = require("https");
 const WebSocket = require("ws");
-var server = http.createServer();
+var debug = process.env.DEBUG || false;
+
+config.options = {
+  key: process.env.SSLKEY ? fs.readFileSync(process.env.SSLKEY) : fs.readFileSync('src/assets/server.key'),
+  cert: process.env.SSLCERT ? fs.readFileSync(process.env.SSLCERT) :  fs.readFileSync('src/assets/server.cert')
+}
+
+if (!process.env.SSL) {
+  var server = http.createServer();
+  server.listen(process.env.port || 3000);
+} else {
+  var server = https.createServer(config.options);
+  server.listen(process.env.PORT || 443);
+}
 
 // LRU with last used sockets
 const QuickLRU = require("quick-lru");
-var evict = function(key, value) {
-  console.log("Garbage Collect", key);
-  if (key)
-    rimraf("tmp/" + key, function() {
-      console.log("Cleaned up ID", key);
-    });
-};
-const lru = new QuickLRU({ maxSize: 10, onEviction: evict });
+const lru = new QuickLRU({ maxSize: 10, onEviction: false });
 
 server.on("upgrade", async function(request, socket, head) {
   var pathname = url.parse(request.url).pathname || "/gun";
-  console.log("Got WS request", pathname);
+  if (debug) console.log("Got WS request", pathname);
   var gun = { gun: false, server: false };
   if (pathname) {
     if (lru.has(pathname)) {
       // Existing Node
-      console.log("Recycle id", pathname);
+      if (debug) console.log("Recycle id", pathname);
       gun = await lru.get(pathname);
     } else {
       // Create Node
-      console.log("Create id", pathname);
+      if (debug) console.log("Create id", pathname);
       // NOTE: Only works with lib/ws.js shim allowing a predefined WS as ws.web parameter in Gun constructor
       gun.server = new WebSocket.Server({ noServer: true, path: pathname });
-      console.log("set peer", request.headers.host + pathname);
+      if (debug) console.log("set peer", request.headers.host + pathname);
       gun.gun = new Gun({
         peers: [], // should we use self as peer?
         localStorage: false,
-        file: "tmp/" + pathname,
+        file: false, // "tmp/" + pathname,
         multicast: false,
         ws: { noServer: true, path: pathname, web: gun.server },
         web: gun.server
@@ -53,13 +59,10 @@ server.on("upgrade", async function(request, socket, head) {
   if (gun.server) {
     // Handle Request
     gun.server.handleUpgrade(request, socket, head, function(ws) {
-      console.log("connecting to gun instance", gun.gun.opt()._.opt.ws.path);
+      if (debug) console.log("connecting to gun instance", gun.gun.opt()._.opt.ws.path);
       gun.server.emit("connection", ws, request);
     });
   } else {
     socket.destroy();
   }
 });
-
-//
-server.listen(3000);
