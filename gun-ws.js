@@ -12,9 +12,7 @@
 	if(ctx.once){ return }
 	if(false === opt.ws){ return }
 	var ws = opt.ws || (opt.ws = {}), batch;
-
 	if(opt.web){ 
-    
     console.log('Initializing Gun WS socket', ws.path);
     
 		ws.server = ws.server || opt.web;
