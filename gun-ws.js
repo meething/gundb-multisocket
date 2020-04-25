@@ -40,6 +40,7 @@
 	}
 	
 	ctx.on('out', function(at){
+    if (!at) return;
 		this.to.next(at);
 		batch = JSON.stringify(at);
 		if(ws.drain){
