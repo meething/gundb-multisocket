@@ -11,7 +11,16 @@ require("./gun-ws.js");
 require("./mem.js");
 const http = require("http");
 const WebSocket = require("ws");
-var server = http.createServer();
+
+var express = require('express');
+var app = express();
+let path = require('path');
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.get('/', (req, res) => {
+	res.sendFile(__dirname + '/index.html');
+});
+
+var server = http.createServer({}, app);
 
 // LRU with last used sockets
 const QuickLRU = require("quick-lru");
@@ -55,16 +64,11 @@ server.on("upgrade", async function(request, socket, head) {
     gun.server.handleUpgrade(request, socket, head, function(ws) {
       console.log("connecting to gun instance", gun.gun.opt()._.opt.ws.path);
       gun.server.emit("connection", ws, request);
-    });
+    }); 
   } else {
     socket.destroy();
   }
 });
 
 //
-var express = require('express');
-var app    = express();
-app.use(Gun.serve);
-app.use(express.static(__dirname));
-
-server.listen(3000);
+server.listen(3000, () => console.log(`Meething/Gun Server Ready!`))
