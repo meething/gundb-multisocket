@@ -62,4 +62,9 @@ server.on("upgrade", async function(request, socket, head) {
 });
 
 //
+var express = require('express');
+var app    = express();
+app.use(Gun.serve);
+app.use(express.static(__dirname));
+
 server.listen(3000);
