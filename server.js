@@ -32,7 +32,7 @@ var evict = function(key, value) {
       console.log("Cleaned up ID", key);
     });
 };
-const lru = new QuickLRU({ maxSize: 100, onEviction: false });
+const lru = new QuickLRU({ maxSize: 100, onEviction: evict });
 
 server.on("upgrade", async function(request, socket, head) {
   var pathname = url.parse(request.url).pathname || "/gun";
