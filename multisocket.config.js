@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    name: 'multisocket",
+    name: 'multisocket',
     script: 'server.js',
     watch: true
     env: {
