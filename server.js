@@ -20,7 +20,7 @@ config.options = {
 
 if (!process.env.hasOwnProperty('SSL')||process.env.SSL == false) {
   var server = http.createServer();
-  server.listen(process.env.PORT || 3000);
+  server.listen(process.env.PORT || 8767);
 } else {
   config.options.key= process.env.SSLKEY ? fs.readFileSync(process.env.SSLKEY) : fs.readFileSync('cert/server.key'),
   config.options.cert= process.env.SSLCERT ? fs.readFileSync(process.env.SSLCERT) :  fs.readFileSync('cert/server.cert')
