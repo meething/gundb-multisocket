@@ -1,5 +1,5 @@
 (function() {
-  var Gun = typeof window !== "undefined" ? window.Gun : require("gun");
+  var Gun = typeof window !== "undefined" ? window.Gun : require("gun/gun");
 
   Gun.on("opt", function(ctx) {
     this.to.next(ctx);
