@@ -1,6 +1,6 @@
 ![image](https://user-images.githubusercontent.com/1423657/80729669-deab7800-8b08-11ea-88a5-13cdbcaee38c.png)
 
-# Gun MultiSocket
+#### Gun MultiSocket
 Single `HTTP/S` server providing multiple ephemeral [GunDB](https://gun.eco) `WebSocket` instances and path based routing and mesh isolation.
 
 ### Notes
