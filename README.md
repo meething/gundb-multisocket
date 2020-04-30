@@ -1,7 +1,7 @@
-![image](https://user-images.githubusercontent.com/1423657/79577881-b6ae2480-80c5-11ea-925c-8d69c2168613.png)
+![image](https://user-images.githubusercontent.com/1423657/80729669-deab7800-8b08-11ea-88a5-13cdbcaee38c.png)
 
-# GunDB MultiSocket
-Single `HTTP/S` server providing `WebSocket` Path based routing to ephemeral [GunDB](https://gun.eco) instances in mesh isolation.
+# Gun MultiSocket
+Single `HTTP/S` server providing multiple ephemeral [GunDB](https://gun.eco) `WebSocket` instances and path based routing and mesh isolation.
 
 ### Notes
 * uses its own [mem](https://github.com/meething/gundb-multisocket/blob/master/mem.js) storage adaptor to avoid any disk writes
