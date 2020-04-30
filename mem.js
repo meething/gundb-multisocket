@@ -27,22 +27,6 @@
         return;
       }
       to = setTimeout(flush, opt.wait || 1);
-    });
-
-    ctx.on("put", function(at) {
-      this.to.next(at);
-      Gun.graph.is(at.put, null, null);
-      if (!at["@"]) {
-        acks[at["#"]] = true;
-      } // only ack non-acks.
-      count += 1;
-      if (count >= (opt.batch || 10000)) {
-        return flush();
-      }
-      if (to) {
-        return;
-      }
-      to = setTimeout(flush, opt.wait || 1);
       var id = at['#']
       ctx.on('in', {"@": id, ok:1})
     });
