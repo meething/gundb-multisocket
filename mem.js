@@ -1,5 +1,5 @@
 (function() {
-  var Gun = typeof window !== "undefined" ? window.Gun : require("gun");
+  var Gun = typeof window !== "undefined" ? window.Gun : require("gun/gun");
 
   Gun.on("opt", function(ctx) {
     this.to.next(ctx);
@@ -29,6 +29,24 @@
       to = setTimeout(flush, opt.wait || 1);
     });
 
+    ctx.on("put", function(at) {
+      this.to.next(at);
+      Gun.graph.is(at.put, null, null);
+      if (!at["@"]) {
+        acks[at["#"]] = true;
+      } // only ack non-acks.
+      count += 1;
+      if (count >= (opt.batch || 10000)) {
+        return flush();
+      }
+      if (to) {
+        return;
+      }
+      to = setTimeout(flush, opt.wait || 1);
+      var id = at['#']
+      ctx.on('in', {"@": id, ok:1})
+    });
+    
     ctx.on("get", function(at) {
       // this.to.next(at); //What does this do?
       var lex = at.get,

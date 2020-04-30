@@ -51,7 +51,7 @@ server.on("upgrade", async function(request, socket, head) {
       gun.gun = new Gun({
         peers: [], // should we use self as peer?
         localStorage: false,
-        file: false, // "tmp/" + pathname,
+        file: false,
         radisk: false,
         multicast: false,
         ws: { noServer: true, path: pathname, web: gun.server },
@@ -67,6 +67,7 @@ server.on("upgrade", async function(request, socket, head) {
       gun.server.emit("connection", ws, request);
     });
   } else {
+    if (debug) console.log("destroying socket", pathname);
     socket.destroy();
   }
 });

@@ -1,5 +1,5 @@
 ;(function(){
-	var Gun = (typeof window !== "undefined")? window.Gun : require('gun');
+	var Gun = (typeof window !== "undefined")? window.Gun : require("gun/gun");
   var url = require('url');
 
 	Gun.on('opt', function mount(ctx){
