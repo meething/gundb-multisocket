@@ -22,8 +22,8 @@
         return;
       }
       to = setTimeout(flush, opt.wait || 1);
-      var id = at['#']
-      ctx.on('in', {"@": id, ok:1})
+     // var id = at['#']
+     // ctx.on('in', {"@": id, ok:1})
     });
 	ctx.on('get', function(at){
                 //console.log("get at",at,disk);
