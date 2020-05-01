@@ -10,7 +10,7 @@ const Gun = require("gun/gun"); // do not load storage adaptors by default
 require("./gun-ws.js"); // required to allow external websockets into gun constructor
 require("./mem.js"); // disable to allow file writing for debug
 require("gun/sea");
-
+require("gun/lib/then");
 const SEA = Gun.SEA;
 const http = require("http");
 const https = require("https");
@@ -33,30 +33,22 @@ if (!process.env.hasOwnProperty('SSL')||process.env.SSL == false) {
 }
 let sigs ={};
 async function hasValidToken(msg,pathname) {
-  return new Promise((res,rej)=>{
-  var sg = null;
-  var token = null;
-  token = (msg && msg.headers && msg.headers.token) ? msg.headers.token : '"fail"';
-  sg = sigs && pathname && sigs.hasOwnProperty(pathname) ? sigs[pathname] : false;
-  //console.log("validating", msg ,"pathname",pathname, "sigs[pathname]",sigs[pathname],"token",token,sigs);
-  var result = false;
-  console.log(token,sg,sigs);
-  try { result = JSON.parse(token) === sg } catch(err){ console.log("error?",err); } 
-  console.log("result",result, JSON.parse(token), sg);
-  return res(result);
-  });
+  return true;
 }
 // LRU with last used sockets
 const QuickLRU = require("quick-lru");
 const lru = new QuickLRU({ maxSize: 10, onEviction: false });
 
 server.on("upgrade", async function(request, socket, head) {
-  var parsed = url.parse(request.url,true);
-  console.log("parsed",parsed);
-  var sig = parsed.query && parsed.query.sig ? parsed.query.sig : false; 
-  console.log(parsed.query,parsed.query.sig);
-  var pathname = parsed.pathname || "/gun";
+  let parsed = url.parse(request.url,true);
+  if(debug) console.log("parsed",parsed);
+  let sig = parsed.query && parsed.query.sig ? parsed.query.sig : false; 
+  let creator = parsed.query && parsed.query.creator ? parsed.query.creator  : "server";
+  let pathname = parsed.pathname || "/gun";
   if (debug) console.log("Got WS request", pathname);
+
+  let roomname = pathname.split().slice(1).join("");
+  console.log("roomname",roomname);
   var gun = { gun: false, server: false };
   if (pathname) {
     if (lru.has(pathname)) {
@@ -70,29 +62,10 @@ server.on("upgrade", async function(request, socket, head) {
       gun.server = new WebSocket.Server({ noServer: true, path: pathname });
       if (debug) console.log("set peer", request.headers.host + pathname);
       if(sig) {
-        if(sigs.hasOwnProperty(pathname)){
-	  if(sig != sigs[pathname]) { console.log("someone is trying to overwrite our room",sig,pathname); return; }
-	}
-	sigs[pathname]=sig;
-        console.log("stored sig ",sig,"to pathname",pathname);
-        Gun.on('opt', function (ctx) {
-        if (ctx.once) return
-        ctx.on('in', function (msg) {
-          var to = this.to;
-          if (msg.put) {
-            if (hasValidToken(msg,pathname)) {
-              console.log('writing',msg,sig);
-              to.next(msg)
-            } else {
-              console.log('not writing',msg,sig);
-            }
-          } else {
-            to.next(msg)
-          }
-        })
-        })
+      	sigs[pathname]=sig;
+        if(debug) console.log("stored sig ",sig,"to pathname",pathname);
       }
-      console.log("gunsea",Gun.SEA);
+      //console.log("gunsea",Gun.SEA);
       SEA.throw = 1;
       /*Gun.on('opt',function(ctx){
         if(ctx.once) return;
@@ -101,7 +74,7 @@ server.on("upgrade", async function(request, socket, head) {
           this.to.next(msg);
         })
       })*/
-      var g = gun.gun = Gun({
+      const g = gun.gun = Gun({
         peers: [], // should we use self as peer?
         localStorage: false,
         file: false, // "tmp/" + pathname,
@@ -110,8 +83,34 @@ server.on("upgrade", async function(request, socket, head) {
         ws: { noServer: true, path: pathname, web: gun.server },
         web: gun.server
       });
-      
       lru.set(pathname, gun);
+      let obj = {roomname:roomname,creator:creator,socket:{}};
+      if(sig) {
+        let user = g.user();
+        user.create(username,sig,async function(ack){
+          console.log("We've got ack",ack);
+          if(ack.err){ console.log("error in user.create",ack.err); }
+          let auth = await new Promise ((res,rej)=>{ 
+            return user.auth(username,sig,res);
+          });
+          if(auth.err){ console.log('error in auth',auth.err); }
+          console.log("auth",auth);
+          Object.assign(obj,{
+            pub:ack.pub,
+            passwordProtected:true
+          })
+          let roomnode = user.get(roomname).put(obj);
+          let putnode = g.get('rtcmeeting').get(roomname).put(roomnode);
+          let rack= await putnode.then();
+          console.log("room created",rack);
+        });
+      } else {
+        ;(async ()=>{
+          let roomnode = g.get("rtcmeeting").get(roomname).put(obj);
+          let rack = await roomnode.then();
+          console.log("room created",ack);
+        })()
+      }
     }
   }
   if (gun.server) {
