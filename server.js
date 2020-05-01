@@ -7,10 +7,11 @@
 const fs = require("fs");
 const url = require("url");
 const Gun = require("gun/gun"); // do not load storage adaptors by default
-require("gun/sea");
-require("gun/lib/then");
 require("./gun-ws.js"); // required to allow external websockets into gun constructor
 require("./mem.js"); // disable to allow file writing for debug
+require("gun/sea");
+
+const SEA = Gun.SEA;
 const http = require("http");
 const https = require("https");
 const WebSocket = require("ws");
@@ -91,6 +92,15 @@ server.on("upgrade", async function(request, socket, head) {
         })
         })
       }
+      console.log("gunsea",Gun.SEA);
+      SEA.throw = 1;
+      /*Gun.on('opt',function(ctx){
+        if(ctx.once) return;
+	ctx.on('in',function(msg){
+          console.log(msg);
+          this.to.next(msg);
+        })
+      })*/
       var g = gun.gun = Gun({
         peers: [], // should we use self as peer?
         localStorage: false,
