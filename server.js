@@ -49,7 +49,8 @@ server.on("upgrade", async function(request, socket, head) {
 
   var gun = { gun: false, server: false };
   if (pathname) {
-    let roomname = pathname.split("").slice(1).join("");
+    let roomname = pathname.split("").slice(1).join(""); 
+    console.log("roomname",roomname);
     if (lru.has(pathname)) {
       // Existing Node
       if (debug) console.log("Recycle id", pathname);
@@ -86,30 +87,29 @@ server.on("upgrade", async function(request, socket, head) {
       let obj = {roomname:roomname,creator:creator,socket:{}};
       if(sig) {
         let user = g.user();
-        user.create(roomname,sig,async function(ack){
-          console.log("We've got create ack",ack);
-          if(ack.err){ console.log("error in user.create",ack.err); }
-          let auth = await new Promise ((res,rej)=>{ 
-            return user.auth(roomname,sig,res);
+        user.create(roomname,sig,async function(dack){
+          console.log("We've got create ack",dack,roomname,sig);
+          if(dack.err){ console.log("error in user.create",dack.err); }
+          user.auth(roomname,sig,function(auth){
+          
+            if(auth.err){ console.log('error in auth',auth.err); }
+            console.log("auth",auth,roomname,sig);
+            Object.assign(obj,{
+              pub:dack.pub,
+              passwordProtected:true
+            })
+            let roomnode = user.get(roomname).put(obj);
+            let putnode = g.get('rtcmeeting').get(roomname);
+            let rack= putnode.put(roomnode);
+            console.log("room created");
+            rack.once(Gun.log);
           });
-          if(auth.err){ console.log('error in auth',auth.err); }
-          console.log("auth",auth);
-          Object.assign(obj,{
-            pub:ack.pub,
-            passwordProtected:true
-          })
-          let roomnode = user.get(roomname).put(obj);
-          let putnode = g.get('rtcmeeting').get(roomname).put(roomnode);
-          let rack= await putnode.then();
-          console.log("room created",rack);
         });
       } else {
-        ;(async ()=>{
-          Object.assign(obj,{passwordProtected:false});
-          let roomnode = g.get("rtcmeeting").get(roomname).put(obj);
-          let rack = await roomnode.then();
+        Object.assign(obj,{passwordProtected:false});
+        let roomnode = g.get("rtcmeeting").get(roomname).put(obj,function(rack){
           console.log("room created",rack);
-        })()
+        });
       }
     }
   }
