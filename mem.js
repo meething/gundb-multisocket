@@ -22,11 +22,11 @@
         return;
       }
       to = setTimeout(flush, opt.wait || 1);
-      var id = at['#']
-      ctx.on('in', {"@": id, ok:1})
+      //var id = at['#']
+      //ctx.on('in', {"@": id, ok:1})
     });
 	ctx.on('get', function(at){
-                console.log("get at",at,disk);
+                //console.log("get at",at,disk);
 		this.to.next(at);
 		var lex = at.get, soul, data, opt, u;
 		//setTimeout(function(){
@@ -47,7 +47,7 @@
 
 	var wait;
 	var flush = function(){
-                console.log("flushing",to);
+                //console.log("flushing",to);
 		if(wait){ return }
 		wait = true;
 		clearTimeout(to);

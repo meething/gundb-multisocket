@@ -47,10 +47,9 @@ server.on("upgrade", async function(request, socket, head) {
   let pathname = parsed.pathname || "/gun";
   if (debug) console.log("Got WS request", pathname);
 
-  let roomname = pathname.split().slice(1).join("");
-  console.log("roomname",roomname);
   var gun = { gun: false, server: false };
   if (pathname) {
+    let roomname = pathname.split("").slice(1).join("");
     if (lru.has(pathname)) {
       // Existing Node
       if (debug) console.log("Recycle id", pathname);
@@ -106,9 +105,10 @@ server.on("upgrade", async function(request, socket, head) {
         });
       } else {
         ;(async ()=>{
+          Object.assign(obj,{passwordProtected:false});
           let roomnode = g.get("rtcmeeting").get(roomname).put(obj);
           let rack = await roomnode.then();
-          console.log("room created",ack);
+          console.log("room created",rack);
         })()
       }
     }
