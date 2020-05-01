@@ -87,11 +87,11 @@ server.on("upgrade", async function(request, socket, head) {
       let obj = {roomname:roomname,creator:creator,socket:{}};
       if(sig) {
         let user = g.user();
-        user.create(username,sig,async function(ack){
+        user.create(roomname,sig,async function(ack){
           console.log("We've got ack",ack);
           if(ack.err){ console.log("error in user.create",ack.err); }
           let auth = await new Promise ((res,rej)=>{ 
-            return user.auth(username,sig,res);
+            return user.auth(roomname,sig,res);
           });
           if(auth.err){ console.log('error in auth',auth.err); }
           console.log("auth",auth);
