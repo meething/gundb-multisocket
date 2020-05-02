@@ -100,11 +100,12 @@ server.on("upgrade", async function(request, socket, head) {
               passwordProtected:true
             });
             console.log("putting object to user",obj,user);
-            let roomnode = await user.get(roomname).put(obj).then();
-            console.log("roomnode?",roomnode);
-            let putnode = g.get('rtcmeeting').get(roomname);
-            let grack = await putnode.put(roomnode).then()
-            console.log("put object",grack);
+            let roomnode = user.get(roomname).put(obj,function(roomack){
+              console.log("roomnode?",roomack);
+              g.get('rtcmeeting').get(roomname).put(roomnode,function(puback){
+                console.log("put object",puback);
+              });
+            });
           });
         });
       } else {
