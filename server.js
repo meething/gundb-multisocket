@@ -101,9 +101,10 @@ server.on("upgrade", async function(request, socket, head) {
             })
             let roomnode = user.get(roomname).put(obj);
             let putnode = g.get('rtcmeeting').get(roomname);
-            let rack= putnode.put(roomnode);
-            console.log("room created");
-            rack.once(Gun.log);
+            putnode.put(roomnode,function(rack){
+              console.log("room created",rack);
+              putnode.once(Gun.log);
+            });
           });
         });
       } else {
