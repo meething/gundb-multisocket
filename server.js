@@ -77,11 +77,11 @@ server.on("upgrade", async function(request, socket, head) {
       const g = gun.gun = Gun({
         peers: [], // should we use self as peer?
         localStorage: false,
-        file: false, // "tmp/" + pathname,
-        radisk: false,
+        store: no,
+        file: "tmp" + pathname, // make sure not to reuse same storage context
+        radisk: true, // important for nomem!
         multicast: false,
-        ws: { noServer: true, path: pathname, web: gun.server },
-        web: gun.server
+        ws: { noServer: true, path: pathname }
       });
       gun.server = gun.gun.back('opt.ws.web'); // this is the websocket server
       lru.set(pathname, gun);
