@@ -18,7 +18,7 @@ const https = require("https");
 const WebSocket = require("ws");
 var debug = process.env.DEBUG || true;
 var config = {};
-
+if(debug) console.log(SEA, Gun.SEA);
 config.options = {
 }
 if (!process.env.hasOwnProperty('SSL')||process.env.SSL == false) {
