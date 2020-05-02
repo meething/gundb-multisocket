@@ -62,8 +62,8 @@ server.on("upgrade", async function(request, socket, head) {
       //gun.server = new WebSocket.Server({ noServer: true, path: pathname });
       if (debug) console.log("set peer", request.headers.host + pathname);
       if(sig) {
-      	sigs[pathname]=sig;
-        if(debug) console.log("stored sig ",sig,"to pathname",pathname);
+      	sigs[roomname]=sig;
+        if(debug) console.log("stored sig ",sig,"to pathname",roomname);
       }
       //console.log("gunsea",Gun.SEA);
       //SEA.throw = 1;
@@ -100,7 +100,7 @@ server.on("upgrade", async function(request, socket, head) {
               passwordProtected:true
             });
             console.log("putting object to user",obj,user);
-            user.get(roomname).put(obj,function(roomack){
+            user.get(roomname).put(obj,function(roomack){ //TODO: @marknadal fix me
               console.log("roomnode?",roomack);
               g.get('rtcmeeting').get(roomname).put(roomnode,function(puback){
                 console.log("put object",puback);
