@@ -100,7 +100,7 @@ server.on("upgrade", async function(request, socket, head) {
               passwordProtected:true
             });
             console.log("putting object to user",obj,user);
-            let roomnode = user.get(roomname).put(obj,function(roomack){
+            user.get(roomname).put(obj,function(roomack){
               console.log("roomnode?",roomack);
               g.get('rtcmeeting').get(roomname).put(roomnode,function(puback){
                 console.log("put object",puback);
@@ -110,7 +110,7 @@ server.on("upgrade", async function(request, socket, head) {
         });
       } else {
         Object.assign(obj,{passwordProtected:false});
-        let roomnode = g.get("rtcmeeting").get(roomname).put(obj,function(grack){
+        g.get("rtcmeeting").get(roomname).put(obj,function(grack){
           console.log("room created",grack);
         });
       }
