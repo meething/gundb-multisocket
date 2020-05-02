@@ -59,7 +59,7 @@ server.on("upgrade", async function(request, socket, head) {
       // Create Node
       if (debug) console.log("Create id", pathname);
       // NOTE: Only works with lib/ws.js shim allowing a predefined WS as ws.web parameter in Gun constructor
-      gun.server = new WebSocket.Server({ noServer: true, path: pathname });
+      //gun.server = new WebSocket.Server({ noServer: true, path: pathname });
       if (debug) console.log("set peer", request.headers.host + pathname);
       if(sig) {
       	sigs[pathname]=sig;
