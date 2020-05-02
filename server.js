@@ -4,11 +4,12 @@
  * MIT Licensed (C) QXIP 2020
  */
 
+var no = require('gun/lib/nomem')(); // no-memory storage adapter for RAD
 const fs = require("fs");
 const url = require("url");
-const Gun = require("gun/gun"); // do not load storage adaptors by default
-require("./gun-ws.js"); // required to allow external websockets into gun constructor
-require("./mem.js"); // disable to allow file writing for debug
+const Gun = require("gun"); // load defaults
+//require("./gun-ws.js"); // required to allow external websockets into gun constructor
+//require("./mem.js"); // disable to allow file writing for debug
 require("gun/sea");
 require("gun/lib/then");
 const SEA = Gun.SEA;
@@ -17,10 +18,9 @@ const https = require("https");
 const WebSocket = require("ws");
 var debug = process.env.DEBUG || false;
 var config = {};
+
 config.options = {
 }
-
-
 if (!process.env.hasOwnProperty('SSL')||process.env.SSL == false) {
   var server = http.createServer();
   server.listen(process.env.PORT || 8767);
@@ -49,7 +49,8 @@ server.on("upgrade", async function(request, socket, head) {
 
   var gun = { gun: false, server: false };
   if (pathname) {
-    let roomname = pathname.split("").slice(1).join("");
+    let roomname = pathname.split("").slice(1).join(""); 
+    console.log("roomname",roomname);
     if (lru.has(pathname)) {
       // Existing Node
       if (debug) console.log("Recycle id", pathname);
@@ -65,7 +66,7 @@ server.on("upgrade", async function(request, socket, head) {
         if(debug) console.log("stored sig ",sig,"to pathname",pathname);
       }
       //console.log("gunsea",Gun.SEA);
-      SEA.throw = 1;
+      //SEA.throw = 1;
       /*Gun.on('opt',function(ctx){
         if(ctx.once) return;
 	ctx.on('in',function(msg){
@@ -82,34 +83,34 @@ server.on("upgrade", async function(request, socket, head) {
         ws: { noServer: true, path: pathname, web: gun.server },
         web: gun.server
       });
+      gun.server = gun.gun.back('opt.ws.web'); // this is the websocket server
       lru.set(pathname, gun);
       let obj = {roomname:roomname,creator:creator,socket:{}};
       if(sig) {
         let user = g.user();
-        user.create(roomname,sig,async function(ack){
-          console.log("We've got create ack",ack);
-          if(ack.err){ console.log("error in user.create",ack.err); }
-          let auth = await new Promise ((res,rej)=>{ 
-            return user.auth(roomname,sig,res);
+        user.create(roomname,sig,async function(dack){
+          console.log("We've got create ack",dack,roomname,sig);
+          if(dack.err){ console.log("error in user.create",dack.err); }
+          user.auth(roomname,sig,function(auth){
+          
+            if(auth.err){ console.log('error in auth',auth.err); }
+            console.log("auth",auth,roomname,sig);
+            Object.assign(obj,{
+              pub:dack.pub,
+              passwordProtected:true
+            })
+            let roomnode = user.get(roomname).put(obj);
+            let putnode = g.get('rtcmeeting').get(roomname);
+            let rack= putnode.put(roomnode);
+            console.log("room created");
+            rack.once(Gun.log);
           });
-          if(auth.err){ console.log('error in auth',auth.err); }
-          console.log("auth",auth);
-          Object.assign(obj,{
-            pub:ack.pub,
-            passwordProtected:true
-          })
-          let roomnode = user.get(roomname).put(obj);
-          let putnode = g.get('rtcmeeting').get(roomname).put(roomnode);
-          let rack= await putnode.then();
-          console.log("room created",rack);
         });
       } else {
-        ;(async ()=>{
-          Object.assign(obj,{passwordProtected:false});
-          let roomnode = g.get("rtcmeeting").get(roomname).put(obj);
-          let rack = await roomnode.then();
+        Object.assign(obj,{passwordProtected:false});
+        let roomnode = g.get("rtcmeeting").get(roomname).put(obj,function(rack){
           console.log("room created",rack);
-        })()
+        });
       }
     }
   }
@@ -120,6 +121,7 @@ server.on("upgrade", async function(request, socket, head) {
       gun.server.emit("connection", ws, request);
     });
   } else {
+    if (debug) console.log("destroying socket", pathname);
     socket.destroy();
   }
 });
