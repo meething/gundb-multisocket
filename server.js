@@ -66,7 +66,7 @@ server.on("upgrade", async function(request, socket, head) {
         if(debug) console.log("stored sig ",sig,"to pathname",pathname);
       }
       //console.log("gunsea",Gun.SEA);
-      SEA.throw = 1;
+      //SEA.throw = 1;
       /*Gun.on('opt',function(ctx){
         if(ctx.once) return;
 	ctx.on('in',function(msg){
