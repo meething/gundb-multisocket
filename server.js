@@ -91,7 +91,7 @@ server.on("upgrade", async function(request, socket, head) {
         user.create(roomname,sig,async function(dack){
           console.log("We've got user create ack",dack,roomname,sig);
           if(dack.err){ console.log("error in user.create",dack.err); }
-          user.auth(roomname,sig,function(auth){
+          user.auth(roomname,sig,async function(auth){
             console.log("We've got user auth ack",auth);
             if(auth.err){ console.log('error in auth',auth.err); }
             //console.log("auth",auth,roomname,sig);
