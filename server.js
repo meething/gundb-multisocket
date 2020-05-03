@@ -17,8 +17,8 @@ var debug = process.env.DEBUG || false;
 var config = {};
 
 config.options = {
-  key: process.env.SSLKEY ? fs.readFileSync(process.env.SSLKEY) : fs.readFileSync('cert/server.key'),
-  cert: process.env.SSLCERT ? fs.readFileSync(process.env.SSLCERT) :  fs.readFileSync('cert/server.cert')
+  key: process.env.SSLKEY ? fs.readFileSync(process.env.SSLKEY) : false,
+  cert: process.env.SSLCERT ? fs.readFileSync(process.env.SSLCERT) :  false
 }
 
 if (!process.env.SSL) {
