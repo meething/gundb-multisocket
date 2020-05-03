@@ -4,11 +4,12 @@
  * MIT Licensed (C) QXIP 2020
  */
 
+var no = require('gun/lib/nomem')(); // no-memory storage adapter for RAD
+
 const fs = require("fs");
 const url = require("url");
-const Gun = require("gun/gun"); // do not load storage adaptors by default
-require("./gun-ws.js"); // required to allow external websockets into gun constructor
-require("./mem.js"); // disable to allow file writing for debug
+const Gun = require("gun"); // load defaults
+
 const http = require("http");
 const https = require("https");
 const WebSocket = require("ws");
@@ -44,18 +45,17 @@ server.on("upgrade", async function(request, socket, head) {
     } else {
       // Create Node
       if (debug) console.log("Create id", pathname);
-      // NOTE: Only works with lib/ws.js shim allowing a predefined WS as ws.web parameter in Gun constructor
-      gun.server = new WebSocket.Server({ noServer: true, path: pathname });
       if (debug) console.log("set peer", request.headers.host + pathname);
       gun.gun = new Gun({
         peers: [], // should we use self as peer?
         localStorage: false,
-        file: false,
-        radisk: false,
+        store: no,
+        file: "tmp" + pathname, // make sure not to reuse same storage context
+        radisk: true, // important for nomem!
         multicast: false,
-        ws: { noServer: true, path: pathname, web: gun.server },
-        web: gun.server
+        ws: { noServer: true, path: pathname }
       });
+      gun.server = gun.gun.back('opt.ws.web'); // this is the websocket server
       lru.set(pathname, gun);
     }
   }
