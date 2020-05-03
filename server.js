@@ -31,7 +31,7 @@ if (!process.env.SSL) {
 
 // LRU with last used sockets
 const QuickLRU = require("quick-lru");
-const lru = new QuickLRU({ maxSize: 10, onEviction: false });
+const lru = new QuickLRU({ maxSize: 49, onEviction: false });
 
 server.on("upgrade", async function(request, socket, head) {
   var pathname = url.parse(request.url).pathname || "/gun";
@@ -56,6 +56,7 @@ server.on("upgrade", async function(request, socket, head) {
         ws: { noServer: true, path: pathname }
       });
       gun.server = gun.gun.back('opt.ws.web'); // this is the websocket server
+      gun.server.setMaxListeners(50); // allow 50 listeners
       lru.set(pathname, gun);
     }
   }
