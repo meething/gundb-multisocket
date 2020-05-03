@@ -1,5 +1,5 @@
 ;(function(){
-	var Gun = (typeof window !== "undefined")? window.Gun : require('gun');
+	var Gun = (typeof window !== "undefined")? window.Gun : require("gun/gun");
   var url = require('url');
 
 	Gun.on('opt', function mount(ctx){
@@ -12,7 +12,9 @@
 	if(ctx.once){ return }
 	if(false === opt.ws){ return }
 	var ws = opt.ws || (opt.ws = {}), batch;
+
 	if(opt.web){ 
+    
     console.log('Initializing Gun WS socket', ws.path);
     
 		ws.server = ws.server || opt.web;

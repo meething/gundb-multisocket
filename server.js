@@ -1,76 +1,72 @@
 /* Gun Multi-WS Monster */
 /* Spawn multiple Gun WebSockets from the same HTTP/HTTPS server
  * Each Gun is scoped to its ws.path and intended for ephemeral usage
- * MIT Licensed (C) QXIP 2020 (QXIP, QVDEV)
+ * MIT Licensed (C) QXIP 2020
  */
 
+var no = require('gun/lib/nomem')(); // no-memory storage adapter for RAD
+
+const fs = require("fs");
 const url = require("url");
-var rimraf = require("rimraf");
-const Gun = require("gun/gun");
-require("./gun-ws.js");
-require("./mem.js");
+const Gun = require("gun"); // load defaults
+
 const http = require("http");
+const https = require("https");
 const WebSocket = require("ws");
+var debug = process.env.DEBUG || false;
+var config = {};
 
-// Optional File Webservice
-var express = require('express');
-var app = express();
-let path = require('path');
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
-app.get('/', (req, res) => {
-	res.sendFile(__dirname + '/index.html');
-});
+config.options = {
+  key: process.env.SSLKEY ? fs.readFileSync(process.env.SSLKEY) : false,
+  cert: process.env.SSLCERT ? fs.readFileSync(process.env.SSLCERT) :  false
+}
 
-var server = http.createServer({}, app);
+if (!process.env.SSL) {
+  var server = http.createServer();
+  server.listen(process.env.PORT || 3000);
+} else {
+  var server = https.createServer(config.options);
+  server.listen(process.env.PORT || 443);
+}
 
 // LRU with last used sockets
 const QuickLRU = require("quick-lru");
-var evict = function(key, value) {
-  console.log("Garbage Collect", key);
-  if (key)
-    rimraf("tmp/" + key, function() {
-      console.log("Cleaned up ID", key);
-    });
-};
-const lru = new QuickLRU({ maxSize: 100, onEviction: evict });
+const lru = new QuickLRU({ maxSize: 10, onEviction: false });
 
 server.on("upgrade", async function(request, socket, head) {
   var pathname = url.parse(request.url).pathname || "/gun";
-  console.log("Got WS request", pathname);
+  if (debug) console.log("Got WS request", pathname);
   var gun = { gun: false, server: false };
   if (pathname) {
     if (lru.has(pathname)) {
       // Existing Node
-      console.log("Recycle id", pathname);
+      if (debug) console.log("Recycle id", pathname);
       gun = await lru.get(pathname);
     } else {
       // Create Node
-      console.log("Create id", pathname);
-      // NOTE: Only works with lib/ws.js shim allowing a predefined WS as ws.web parameter in Gun constructor
-      gun.server = new WebSocket.Server({ noServer: true, path: pathname });
-      console.log("route to peer", request.headers.host + pathname);
+      if (debug) console.log("Create id", pathname);
+      if (debug) console.log("set peer", request.headers.host + pathname);
       gun.gun = new Gun({
         peers: [], // should we use self as peer?
         localStorage: false,
-        axe: false,
-        file: false, //"tmp/" + pathname,
+        store: no,
+        file: "tmp" + pathname, // make sure not to reuse same storage context
+        radisk: true, // important for nomem!
         multicast: false,
-        ws: { noServer: true, path: pathname, web: gun.server },
-        web: gun.server
+        ws: { noServer: true, path: pathname }
       });
+      gun.server = gun.gun.back('opt.ws.web'); // this is the websocket server
       lru.set(pathname, gun);
     }
   }
   if (gun.server) {
     // Handle Request
     gun.server.handleUpgrade(request, socket, head, function(ws) {
-      console.log("connecting to gun instance", gun.gun.opt()._.opt.ws.path);
+      if (debug) console.log("connecting to gun instance", gun.gun.opt()._.opt.ws.path);
       gun.server.emit("connection", ws, request);
-    }); 
+    });
   } else {
+    if (debug) console.log("destroying socket", pathname);
     socket.destroy();
   }
 });
-
-//
-server.listen(3000, () => console.log(`Meething/Gun Server Ready!`))

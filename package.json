@@ -1,6 +1,6 @@
 {
   "name": "gundb-multisocket",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "author": "Lorenzo Mangani <lorenzo.mangani@gmail.com>",
   "description": "Serve multiple Gun WS instances over a single HTTP socket",
   "main": "server.js",
@@ -9,9 +9,8 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "gun": "^0.2020.401",
-    "quick-lru": "^5.1.0",
-    "rimraf": "^3.0.2"
+    "gun": "^0.2020.430",
+    "quick-lru": "^5.1.0"
   },
   "engines": {
     "node": "12.x"
