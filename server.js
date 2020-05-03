@@ -102,6 +102,7 @@ server.on("upgrade", async function(request, socket, head) {
             console.log("putting object to user",obj,user);
             user.get(roomname).put(obj,function(roomack){ //TODO: @marknadal fix me
               console.log("roomnode?",roomack);
+              var roomnode = user.get(roomname);
               g.get('rtcmeeting').get(roomname).put(roomnode,function(puback){
                 console.log("put object",puback);
               });
