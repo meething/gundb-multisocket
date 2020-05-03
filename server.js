@@ -13,7 +13,7 @@ const Gun = require("gun"); // load defaults
 const http = require("http");
 const https = require("https");
 const WebSocket = require("ws");
-var debug = process.env.DEBUG || false;
+var debug = process.env.DEBUG || true;
 var config = {};
 
 config.options = {
