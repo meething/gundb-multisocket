@@ -5,7 +5,8 @@
   "description": "Serve multiple Gun WS instances over a single HTTP socket",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "postinstall": "cp ./gun.js ./node_modules/gun/gun.js"
   },
   "dependencies": {
     "express": "^4.17.1",
