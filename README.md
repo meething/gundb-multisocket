@@ -14,6 +14,7 @@ Single `HTTP/S` server providing multiple ephemeral [GunDB](https://gun.eco) `We
 ### Installation
 ```
 npm install
+cp ./gun.js node_modules/gun/gun.js
 ```
 
 ### Usage
