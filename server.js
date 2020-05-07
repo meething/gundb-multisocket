@@ -91,6 +91,7 @@ server.on("upgrade", async function(request, socket, head) {
       gun.server = gun.gun.back('opt.ws.web'); // this is the websocket server
       lru.set(pathname, gun);
       let obj = {
+        label:roomname.replace(/(_.*)/,''),
         roomname:roomname,
         creator:creator
       };
@@ -112,7 +113,7 @@ server.on("upgrade", async function(request, socket, head) {
             user.get(roomname).put(obj,function(roomack){ //TODO: @marknadal fix me
               if(debug) console.log("roomnode?",roomack);
               var roomnode = user.get(roomname);
-              g.get('rtcmeeting').get(roomname).put(roomnode,function(puback){
+              g.get('meething').get(roomname).put(roomnode,function(puback){
                 if(debug) console.log("put object",puback);
               });
             });
@@ -120,7 +121,7 @@ server.on("upgrade", async function(request, socket, head) {
         });
       } else {
         Object.assign(obj,{passwordProtected:false});
-        g.get("rtcmeeting").get(roomname).put(obj,function(grack){
+        g.get("meething").get(roomname).put(obj,function(grack){
           if(debug) console.log("room created",grack);
         });
       }
