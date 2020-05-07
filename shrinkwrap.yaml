@@ -2,6 +2,7 @@ dependencies:
   express: 4.17.1
   gun: 0.2020.430
   quick-lru: 5.1.0
+  ws: 7.2.5
 packages:
   /@peculiar/asn1-schema/1.1.2:
     dependencies:
@@ -697,6 +698,15 @@ packages:
     optional: true
     resolution:
       integrity: sha512-mE+E00gulvbLjHaAwl0kph60oOLQRsKyivEFgV9DMM/3Y05F1vZvGq12hAcNzHRnYxyEOABBT/XMtwGSg5xA7A==
+  /ws/7.2.5:
+    dev: false
+    engines:
+      node: '>=8.3.0'
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: ^5.0.2
+    resolution:
+      integrity: sha512-C34cIU4+DB2vMyAbmEKossWq2ZQDr6QEyuuCzWrM9zfw1sGc0mYiJ0UnG9zzNykt49C2Fi34hvr2vssFQRS6EA==
   /ws/7.2.5/5290a7aab7631971258e1bd11475725e:
     dependencies:
       bufferutil: 4.0.1
@@ -717,3 +727,4 @@ specifiers:
   express: ^4.17.1
   gun: ^0.2020.430
   quick-lru: ^5.1.0
+  ws: ^7.2.5
