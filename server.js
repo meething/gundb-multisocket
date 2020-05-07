@@ -95,6 +95,7 @@ server.on("upgrade", async function(request, socket, head) {
         roomname:roomname,
         creator:creator
       };
+      var meething = g.get('meething').put({label:'Meething'});
       if(debug) console.log('object is',obj);
       if(sig) {
         let user = g.user();
