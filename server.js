@@ -79,7 +79,7 @@ server.on("upgrade", async function(request, socket, head) {
       })*/
       let qs = ["sig="+encodeURIComponent((sig ? sig :'')),"creator="+encodeURIComponent((creator ? creator : ''))].join("&");
       let relaypath = roomname+'?'+qs;
-      let peers = relaypeers.split(',').map(function(p){ return p+relaypath; });
+      let peers = []; //relaypeers.split(',').map(function(p){ return p+relaypath; });
       if(debug) console.log("peers",peers);
       const g = gun.gun = Gun({
         peers: peers, // should we use self as peer?
