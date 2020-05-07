@@ -7,6 +7,8 @@ const no = require('gun/lib/nomem')(); // no-memory storage adapter for RAD
 const fs = require("fs");
 const url = require("url");
 const Gun = require("gun"); // load defaults
+
+
 //require("./gun-ws.js"); // required to allow external websockets into gun constructor
 //require("./mem.js"); // disable to allow file writing for debug
 require("gun/sea");
