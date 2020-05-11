@@ -94,6 +94,7 @@ server.on("upgrade", async function(request, socket, head) {
       lru.set(pathname, gun);
       let obj = {
         label:roomname.replace(/(_.*)/,''),
+        timestamp:Gun.state(),
         roomname:roomname,
         creator:creator
       };
