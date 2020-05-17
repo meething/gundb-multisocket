@@ -4,40 +4,56 @@
  * MIT Licensed (C) QXIP 2020
  */
 
-var no = require('gun/lib/nomem')(); // no-memory storage adapter for RAD
 
+const no = require('gun/lib/nomem')(); // no-memory storage adapter for RAD
 const fs = require("fs");
 const url = require("url");
 const Gun = require("gun"); // load defaults
 
+
+//require("./gun-ws.js"); // required to allow external websockets into gun constructor
+//require("./mem.js"); // disable to allow file writing for debug
+require("gun/sea");
+require("gun/lib/then");
+const SEA = Gun.SEA;
 const http = require("http");
 const https = require("https");
 const WebSocket = require("ws");
-var debug = process.env.DEBUG || false;
-var config = {};
-
+let debug = process.env.DEBUG || false;
+let relaypeers = process.env.RELAY || 'https://mirror.rig.airfaas.com/'; // FOR FUTURE DAISY-CHAINING (see hyperswarm to connect guns)
+let config = {};
+if(debug) console.log(SEA, Gun.SEA);
 config.options = {
-  key: process.env.SSLKEY ? fs.readFileSync(process.env.SSLKEY) : false,
-  cert: process.env.SSLCERT ? fs.readFileSync(process.env.SSLCERT) :  false
 }
-
-if (!process.env.SSL) {
+if (!process.env.hasOwnProperty('SSL')||process.env.SSL == false) {
   var server = http.createServer();
   server.listen(process.env.PORT || 3000);
 } else {
+  config.options.key= process.env.SSLKEY ? fs.readFileSync(process.env.SSLKEY) : false,
+  config.options.cert= process.env.SSLCERT ? fs.readFileSync(process.env.SSLCERT) :  false
+
   var server = https.createServer(config.options);
   server.listen(process.env.PORT || 443);
 }
+let sigs ={};
 
 // LRU with last used sockets
 const QuickLRU = require("quick-lru");
 const lru = new QuickLRU({ maxSize: 10, onEviction: false });
 
 server.on("upgrade", async function(request, socket, head) {
-  var pathname = url.parse(request.url).pathname || "/gun";
+  let parsed = url.parse(request.url,true);
+  if(debug) console.log("parsed",parsed);
+  let sig = parsed.query && parsed.query.sig ? parsed.query.sig : false; 
+  let creator = parsed.query && parsed.query.creator ? parsed.query.creator  : "server";
+  let pathname = parsed.pathname || "/gun";
+  pathname = pathname.replace(/^\/\//g,'/');
   if (debug) console.log("Got WS request", pathname);
+
   var gun = { gun: false, server: false };
   if (pathname) {
+    let roomname = pathname.split("").slice(1).join(""); 
+    if(debug) console.log("roomname",roomname);
     if (lru.has(pathname)) {
       // Existing Node
       if (debug) console.log("Recycle id", pathname);
@@ -45,9 +61,19 @@ server.on("upgrade", async function(request, socket, head) {
     } else {
       // Create Node
       if (debug) console.log("Create id", pathname);
+      // NOTE: Only works with lib/ws.js shim allowing a predefined WS as ws.web parameter in Gun constructor
+      //gun.server = new WebSocket.Server({ noServer: true, path: pathname });
       if (debug) console.log("set peer", request.headers.host + pathname);
-      gun.gun = new Gun({
-        peers: [], // should we use self as peer?
+      if(sig) {
+      	sigs[roomname]=sig;
+        if(debug) console.log("stored sig ",sig,"to pathname",roomname);
+      }
+      let qs = ["sig="+encodeURIComponent((sig ? sig :'')),"creator="+encodeURIComponent((creator ? creator : ''))].join("&");
+      let relaypath = roomname+'?'+qs;
+      let peers = []; //relaypeers.split(',').map(function(p){ return p+relaypath; });
+      if(debug) console.log("peers",peers);
+      const g = gun.gun = Gun({
+        peers: peers, // should we use self as peer?
         localStorage: false,
         store: no,
         file: "tmp" + pathname, // make sure not to reuse same storage context
@@ -57,6 +83,43 @@ server.on("upgrade", async function(request, socket, head) {
       });
       gun.server = gun.gun.back('opt.ws.web'); // this is the websocket server
       lru.set(pathname, gun);
+      let obj = {
+        label:roomname.replace(/(_.*)/,''),
+        timestamp:Gun.state(),
+        roomname:roomname,
+        creator:creator
+      };
+      var meething = g.get('meething').put({label:'Meething'});
+      if(debug) console.log('object is',obj);
+      if(sig) {
+        let user = g.user();
+        user.create(roomname,sig, function(dack){
+          if(debug) console.log("We've got user create ack",dack,roomname,sig);
+          if(dack.err){ console.log("error in user.create",dack.err); }
+          user.auth(roomname,sig, function(auth){
+            if(debug) console.log("We've got user auth ack",auth);
+            if(auth.err){ console.log('error in auth',auth.err); }
+            //console.log("auth",auth,roomname,sig);
+            Object.assign(obj,{
+              pub:dack.pub,
+              passwordProtected:'true'
+            });
+            if(debug) console.log("putting",roomname,"with object",obj, `to user ${dack.pub}`);
+            user.get(roomname).put(obj,function(roomack){ //TODO: @marknadal fix me
+              if(debug) console.log("roomnode?",roomack);
+              var roomnode = user.get(roomname);
+              g.get('meething').get(roomname).put(roomnode,function(puback){
+                if(debug) console.log("put object",puback);
+              });
+            });
+          });
+        });
+      } else {
+        Object.assign(obj,{passwordProtected:false});
+        g.get("meething").get(roomname).put(obj,function(grack){
+          if(debug) console.log("room created",grack);
+        });
+      }
     }
   }
   if (gun.server) {
