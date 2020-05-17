@@ -4,15 +4,11 @@
  * MIT Licensed (C) QXIP 2020
  */
 
-
 const no = require('gun/lib/nomem')(); // no-memory storage adapter for RAD
 const fs = require("fs");
 const url = require("url");
 const Gun = require("gun"); // load defaults
 
-
-//require("./gun-ws.js"); // required to allow external websockets into gun constructor
-//require("./mem.js"); // disable to allow file writing for debug
 require("gun/sea");
 require("gun/lib/then");
 const SEA = Gun.SEA;
@@ -31,7 +27,6 @@ if (!process.env.hasOwnProperty('SSL')||process.env.SSL == false) {
 } else {
   config.options.key= process.env.SSLKEY ? fs.readFileSync(process.env.SSLKEY) : false,
   config.options.cert= process.env.SSLCERT ? fs.readFileSync(process.env.SSLCERT) :  false
-
   var server = https.createServer(config.options);
   server.listen(process.env.PORT || 443);
 }
@@ -39,7 +34,7 @@ let sigs ={};
 
 // LRU with last used sockets
 const QuickLRU = require("quick-lru");
-const lru = new QuickLRU({ maxSize: 10, onEviction: false });
+const lru = new QuickLRU({ maxSize: 100, onEviction: false });
 
 server.on("upgrade", async function(request, socket, head) {
   let parsed = url.parse(request.url,true);
