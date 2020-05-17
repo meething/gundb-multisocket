@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/1423657/80729669-deab7800-8b08-11ea-88a5-13cdbcaee38c.png)
+<img src="https://i.imgur.com/XS79fTC.png" width=200> <img width="100" alt="mozilla-builders" src="https://user-images.githubusercontent.com/1423657/81992335-85346480-9643-11ea-8754-8275e98e06bc.png">
 
 #### Gun MultiSocket
 Single `HTTP/S` server providing multiple ephemeral [GunDB](https://gun.eco) `WebSocket` instances with  path based routing and mesh isolation.
