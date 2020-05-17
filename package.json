@@ -1,17 +1,18 @@
 {
   "name": "gundb-multisocket",
-  "version": "0.0.3",
+  "version": "0.0.3.1",
   "author": "Lorenzo Mangani <lorenzo.mangani@gmail.com>",
   "description": "Serve multiple Gun WS instances over a single HTTP socket",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "postinstall": "cp ./gun.js ./node_modules/gun/gun.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "gun": "^0.2020.430",
-    "quick-lru": "^5.1.0"
+    "gun": "0.2020.514",
+    "quick-lru": "^5.1.0",
+    "ws": "^7.2.5",
+    "hyperswarm": "^2.13.0"
   },
   "engines": {
     "node": "12.x"
