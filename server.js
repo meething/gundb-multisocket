@@ -4,10 +4,10 @@
  * MIT Licensed (C) QXIP 2020
  */
 
-const no = require('gun/lib/nomem')(); // no-memory storage adapter for RAD
 const fs = require("fs");
 const url = require("url");
 const Gun = require("gun"); // load defaults
+const no = require('gun/lib/nomem')(); // no-memory storage adapter for RAD
 
 require("gun/sea");
 require("gun/lib/then");
