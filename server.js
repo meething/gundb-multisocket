@@ -21,7 +21,7 @@ let config = {};
 if(debug) console.log(SEA, Gun.SEA);
 config.options = {
 }
-if (!process.env.hasOwnProperty('SSL')||process.env.SSL == false) {
+if (!process.env.hasOwnProperty('SSL')||process.env.SSL == "false") {
   var server = http.createServer();
   server.listen(process.env.PORT || 3000);
 } else {
