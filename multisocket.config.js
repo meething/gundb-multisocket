@@ -2,7 +2,7 @@ module.exports = {
   apps : [{
     name: 'multisocket',
     script: 'server.js',
-    watch: true
+    watch: true,
     env: {
       SSL : false,
       SSLKEY : 'cert/server.key',
